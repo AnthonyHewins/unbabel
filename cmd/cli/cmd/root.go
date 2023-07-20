@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"go/parser"
 	"io"
 	"os"
 	"time"
@@ -66,7 +67,15 @@ Take JSON and turn it into PBF, Go structs, or SQL`,
 				return err
 			}
 
-			generator.GenerateOutputFromString(string(buf))
+			golang, err := generator.GenerateOutputFromString(string(buf))
+			if err != nil {
+				return err
+			}
+
+			syntaxTree, err := parser.ParseExpr(golang)
+			if err != nil {
+				return err
+			}
 		case "sql":
 			return fmt.Errorf("unimplemented")
 		case "go":
